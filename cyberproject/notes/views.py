@@ -5,10 +5,9 @@ from django.http import HttpResponse
 from .models import User, Note
 from django.views.decorators.csrf import csrf_exempt
 
-# FLAW 5 (A07 - Auth Failures): No brute force protection
-from django.core.cache import cache
-# FIX: Uncomment below to add rate limiting
-# from django.core.cache import cache
+#Flwa no5 (Authentication Failures): No brute force or automated attacks protection
+#Fix: Uncomment below to add rate limiting
+#from django.core.cache import cache
 #@csrf_exempt
 def login_view(request):
     error = None
@@ -16,15 +15,15 @@ def login_view(request):
         username = request.POST['username']
         password = request.POST['password']
 
-        # FLAW 5 FIX: Add this block before the query
+        #Flaw no5 FIX: Add this block before the query
         #attempts_key = f"login_attempts_{username}"
         #attempts = cache.get(attempts_key, 0)
         #if attempts >= 5:
         #    return HttpResponse("Too many attempts. Try again later.", status=429)
         #cache.set(attempts_key, attempts + 1, timeout=300)
 
-        #F(A03 - Injection): Raw SQL with user input
-        # FIX: Use ORM instead:
+        #Flaw no1 (Injection): Raw SQL with user input
+        #Fix: Using ORM instead:
         #user = User.objects.filter(username=username, password=password).first()
         with connection.cursor() as cursor:
             cursor.execute(
@@ -49,8 +48,7 @@ def register_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-
-        #FLAW 3 FIX: Hash the password before saving
+        #Flaw no3 fix: Hash the password before saving
         #from django.contrib.auth.hashers import make_password
         #User.objects.create(username=username, password=make_password(password))
         User.objects.create(username=username, password=password)
@@ -64,8 +62,8 @@ def notes_view(request):
     if not user_id:
         return redirect('/login/')
 
-    # FLAW 2 (A01 - Broken Access Control): Uses URL param instead of session
-    # FIX: Remove the override below, always use the cookie's user_id
+    #Flaw no2 (Broken Access Control): Uses URL param instead of session
+    #Fix: Remove the override below, always use the cookies user_id
     user_id = request.GET.get('user_id', user_id)
 
     notes = Note.objects.filter(user_id=user_id)

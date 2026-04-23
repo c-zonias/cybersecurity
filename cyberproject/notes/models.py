@@ -2,10 +2,7 @@ from django.db import models
 
 class User(models.Model):
     username = models.CharField(max_length=100)
-    # FLAW 3 (A02 Cryptographic Failures): Password stored in plaintext
-    # FIX: Use Django's built-in make_password/check_password instead
-    # from django.contrib.auth.hashers import make_password
-    # password = models.CharField(max_length=255)  # store make_password(raw_password)
+    #Flaw no3 (Cryptographic Failures): Password is stored in plaintext
     password = models.CharField(max_length=100)
 
 class Note(models.Model):
